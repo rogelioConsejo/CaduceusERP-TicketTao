@@ -38,6 +38,15 @@ func TestClient(t *testing.T) {
 			t.Errorf("Expected description to be %v, got %v", description, clientTickets[0].Description())
 		}
 	})
+	t.Run("A client can return a specific ticket by index", func(t *testing.T) {
+		if client.GetTicket(1).Title() != title+" for another issue" {
+			t.Errorf("Expected title to be %v, got %v", title+" for another issue", client.GetTicket(1).Title())
+		}
+		if client.GetTicket(1).Description() != description+" for another issue" {
+			t.Errorf("Expected description to be %v, got %v", description+" for another issue", client.GetTicket(1).Description())
+		}
+
+	})
 }
 
 func checkClientCreationTime(t *testing.T, client TicketClient) {

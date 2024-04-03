@@ -10,15 +10,32 @@ func NewBasicTicketClient() TicketClient {
 }
 
 type TicketClient interface {
-	CreatedAt() time.Time
-	CreateTicket(title string, description string) error
+	ClientTicketManager
+	CreatedEntity
+}
+
+type ClientTicketManager interface {
+	ClientTicketReader
+	ClientTicketWriter
+}
+
+type ClientTicketReader interface {
 	TicketCount() int
 	GetTickets() []Ticket
+	GetTicket(index int) Ticket
+}
+
+type ClientTicketWriter interface {
+	CreateTicket(title string, description string) error
 }
 
 type basicTicketClient struct {
 	creationTime time.Time
 	tickets      []Ticket
+}
+
+func (b *basicTicketClient) GetTicket(index int) Ticket {
+	return b.tickets[index]
 }
 
 func (b *basicTicketClient) GetTickets() []Ticket {

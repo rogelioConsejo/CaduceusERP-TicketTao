@@ -11,7 +11,7 @@ func NewBasicTicket(title, description string) Ticket {
 }
 
 type Ticket interface {
-	CreatedAt() time.Time
+	CreatedEntity
 	Title() string
 	Description() string
 }
