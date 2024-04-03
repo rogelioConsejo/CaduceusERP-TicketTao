@@ -11,6 +11,6 @@ Scalability doesn’t just pertain to handling growing amounts of work or data; 
 ### Intuitive Design
 Drawing from the Taoist principle of following the natural path, "TicketTao" will prioritize intuitive design, ensuring that users can navigate and utilize the system with minimal training. The goal is to align the system’s functionality with the users’ innate behaviors and expectations, reducing resistance and enhancing adoption rates.
 
-> Simple tickets flow,
-> CaduceusERP's glow,
-> Tasks resolve, stress low.
+> Simple tickets flow,  
+> CaduceusERP's glow,  
+> Tasks resolve, stress low.  
