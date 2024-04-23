@@ -1,17 +1,21 @@
-package entities
+package client
 
-import "time"
+import (
+	"ticketTao/entities"
+	"ticketTao/entities/ticket"
+	"time"
+)
 
 func NewBasicTicketClient() TicketClient {
 	return &basicTicketClient{
 		creationTime: time.Now(),
-		tickets:      make([]Ticket, 0),
+		tickets:      make([]ticket.Ticket, 0),
 	}
 }
 
 type TicketClient interface {
 	ClientTicketManager
-	CreatedEntity
+	entities.CreatedEntity
 }
 
 type ClientTicketManager interface {
@@ -21,8 +25,8 @@ type ClientTicketManager interface {
 
 type ClientTicketReader interface {
 	TicketCount() int
-	GetTickets() []Ticket
-	GetTicket(index int) Ticket
+	GetTickets() []ticket.Ticket
+	GetTicket(index int) ticket.Ticket
 }
 
 type ClientTicketWriter interface {
@@ -31,14 +35,14 @@ type ClientTicketWriter interface {
 
 type basicTicketClient struct {
 	creationTime time.Time
-	tickets      []Ticket
+	tickets      []ticket.Ticket
 }
 
-func (b *basicTicketClient) GetTicket(index int) Ticket {
+func (b *basicTicketClient) GetTicket(index int) ticket.Ticket {
 	return b.tickets[index]
 }
 
-func (b *basicTicketClient) GetTickets() []Ticket {
+func (b *basicTicketClient) GetTickets() []ticket.Ticket {
 	return b.tickets
 }
 
@@ -47,7 +51,7 @@ func (b *basicTicketClient) TicketCount() int {
 }
 
 func (b *basicTicketClient) CreateTicket(title string, description string) error {
-	b.tickets = append(b.tickets, NewBasicTicket(title, description))
+	b.tickets = append(b.tickets, ticket.NewBasicTicket(title, description))
 	return nil
 }
 

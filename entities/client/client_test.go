@@ -1,11 +1,22 @@
-package entities
+package client
 
 import (
 	"github.com/rogelioConsejo/golibs/helpers"
 	"testing"
+	"ticketTao/entities/ticket"
 	"time"
 )
 
+// TestClient is a test function to test the functionality of the TicketClient. It runs multiple sub-tests to cover different scenarios.
+// The test function creates a basic client using the makeBasicClient function and performs the following tests:
+//   - A basic client can be created and has a creation date
+//   - A client can create tickets and the ticket count is validated
+//   - A client can return all its tickets and validates the title and description of the first ticket
+//   - A client can return a specific ticket by index and validates the title and description of the ticket
+//
+// The test function requires the makeBasicClient function and the checkClientCreationTime function.
+//
+// For running the sub-tests in parallel, the t.Parallel() function is used.
 func TestClient(t *testing.T) {
 	t.Parallel()
 	client := makeBasicClient(t)
@@ -30,7 +41,7 @@ func TestClient(t *testing.T) {
 		}
 	})
 	t.Run("A client can return all its tickets", func(t *testing.T) {
-		var clientTickets []Ticket = client.GetTickets()
+		var clientTickets []ticket.Ticket = client.GetTickets()
 		if clientTickets[0].Title() != title {
 			t.Errorf("Expected title to be %v, got %v", title, clientTickets[0].Title())
 		}
@@ -49,6 +60,7 @@ func TestClient(t *testing.T) {
 	})
 }
 
+// checkClientCreationTime checks if the creation date of a client is in the past
 func checkClientCreationTime(t *testing.T, client TicketClient) {
 	t.Helper()
 	time.Sleep(11 * time.Millisecond)
@@ -57,6 +69,7 @@ func checkClientCreationTime(t *testing.T, client TicketClient) {
 	}
 }
 
+// makeBasicClient is a helper function that creates and returns a `TicketClient` using the `NewBasicTicketClient` function.
 func makeBasicClient(t *testing.T) TicketClient {
 	t.Helper()
 	client := NewBasicTicketClient()
@@ -64,5 +77,4 @@ func makeBasicClient(t *testing.T) TicketClient {
 		t.Errorf("Expected a client, got nil")
 	}
 	return client
-
 }

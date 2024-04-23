@@ -1,6 +1,4 @@
-github.com/rogelioConsejo/golibs v0.4.2 h1:gr5Mihr7sxtdTDdE+Yno9MSHz4PFBGkRkhUgk9rRCpI=
-github.com/rogelioConsejo/golibs v0.4.2/go.mod h1:L4xLBvr+z/4lcu9cxvLXNrNf0C371ej1fAquiXtw+vI=
-github.com/rogelioConsejo/golibs v0.5.0 h1:c7cjaz6VZJP31Qc9Wqk0V9N/RWwyPVvl8rklcwFboXc=
-github.com/rogelioConsejo/golibs v0.5.0/go.mod h1:x+f6f5q7amlFpWej26/pPqwRKpegJkEnBLq4dyfirf8=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/rogelioConsejo/golibs v0.5.1 h1:9U+YH7wYL1yhZQq8lMYqRitgRcHiJkdDFGy9zIH8Kyw=
 github.com/rogelioConsejo/golibs v0.5.1/go.mod h1:x+f6f5q7amlFpWej26/pPqwRKpegJkEnBLq4dyfirf8=
