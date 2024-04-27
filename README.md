@@ -42,11 +42,14 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - [x] A ticket changes to "in progress" status when a support agent answers it
 - [x] A ticket can be closed
 - [x] A ticket has a conversation log with timestamp, user id and message
-- [ ] A ticket repository saves tickets
-- [ ] A ticket repository can return only non-closed tickets
+- [x] A ticket has a creation date
+- [x] A ticket has a unique identifier
+- [ ] A ticket repository can save a ticket
+- [ ] A ticket repository can return a ticket by its id
 - [ ] A ticket repository can return all tickets ordered by creation date (fifo)
+- [ ] A ticket repository can return only non-closed tickets
 - [ ] A ticket repository can close tickets
-- [ ] A client uses a ticket repository for ticket persistence
+- [x] A client uses a ticket repository for ticket persistence
 - [ ] A client can close ticket through the ticket repository
 - [ ] A client can add an answer or comment to a ticket
 - [ ] A client can retrieve all their tickets through the ticket repository

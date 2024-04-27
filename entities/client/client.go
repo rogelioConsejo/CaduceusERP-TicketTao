@@ -1,60 +1,85 @@
 package client
 
 import (
+	"fmt"
+	"github.com/google/uuid"
 	"ticketTao/entities"
 	"ticketTao/entities/ticket"
 	"time"
 )
 
-func NewBasicTicketClient() TicketClient {
+func NewBasicTicketClient(repository ticket.RepositoryClientAccess) TicketClient {
 	return &basicTicketClient{
-		creationTime: time.Now(),
-		tickets:      make([]ticket.Ticket, 0),
+		creationTime:     time.Now(),
+		ticketRepository: repository,
+		id:               uuid.New(),
 	}
 }
 
 type TicketClient interface {
-	ClientTicketManager
+	entities.IdentifiableEntity
+	TicketUser
 	entities.CreatedEntity
 }
 
-type ClientTicketManager interface {
-	ClientTicketReader
-	ClientTicketWriter
+type TicketUser interface {
+	TicketClientReader
+	TicketWriter
 }
 
-type ClientTicketReader interface {
-	TicketCount() int
-	GetTickets() []ticket.Ticket
-	GetTicket(index int) ticket.Ticket
+type TicketClientReader interface {
+	TicketCount() (int, error)
+	GetTickets() ([]ticket.Ticket, error)
+	GetTicket(uuid uuid.UUID) (ticket.Ticket, error)
 }
 
-type ClientTicketWriter interface {
+type TicketWriter interface {
 	CreateTicket(title string, description string) error
 }
 
 type basicTicketClient struct {
-	creationTime time.Time
-	tickets      []ticket.Ticket
+	creationTime     time.Time
+	id               uuid.UUID
+	ticketRepository ticket.RepositoryClientAccess
 }
 
-func (b *basicTicketClient) GetTicket(index int) ticket.Ticket {
-	return b.tickets[index]
+func (c *basicTicketClient) ID() uuid.UUID {
+	return c.id
 }
 
-func (b *basicTicketClient) GetTickets() []ticket.Ticket {
-	return b.tickets
+func (c *basicTicketClient) GetTicket(ticketId uuid.UUID) (ticket.Ticket, error) {
+	tick, err := c.ticketRepository.GetTicket(c.id, ticketId)
+	if err != nil {
+		return nil, fmt.Errorf("could not get ticket with id %s: %w", ticketId.String(), err)
+	}
+	return tick, nil
 }
 
-func (b *basicTicketClient) TicketCount() int {
-	return len(b.tickets)
+func (c *basicTicketClient) GetTickets() ([]ticket.Ticket, error) {
+	ticks, err := c.ticketRepository.GetAllClientTickets(c.id)
+	if err != nil {
+		return nil, fmt.Errorf("could not get all tickets: %w", err)
+	}
+	return ticks, nil
 }
 
-func (b *basicTicketClient) CreateTicket(title string, description string) error {
-	b.tickets = append(b.tickets, ticket.NewBasicTicket(title, description))
+func (c *basicTicketClient) TicketCount() (int, error) {
+	count, err := c.ticketRepository.GetClientTicketCount(c.id)
+	if err != nil {
+		return 0, fmt.Errorf("could not get ticket count: %w", err)
+	}
+	return count, nil
+}
+
+func (c *basicTicketClient) CreateTicket(title string, description string) error {
+	newTicket := ticket.NewBasicTicket(title, description)
+	err := c.ticketRepository.SaveNewTicketForClient(c.id, newTicket)
+	if err != nil {
+		return fmt.Errorf("could not create ticket: %w", err)
+	}
 	return nil
 }
 
-func (b *basicTicketClient) CreatedAt() time.Time {
-	return b.creationTime
+func (c *basicTicketClient) CreatedAt() time.Time {
+	return c.creationTime
 }
