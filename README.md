@@ -50,7 +50,6 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - [ ] A ticket repository can return only non-closed tickets
 - [ ] A ticket repository can close tickets
 - [x] A client uses a ticket repository for ticket persistence
-- [ ] A client can close ticket through the ticket repository
 - [ ] A client can add an answer or comment to a ticket
 - [ ] A client can retrieve all their tickets through the ticket repository
 - [ ] A client can see the ticket details

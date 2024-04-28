@@ -16,6 +16,14 @@ func NewBasicTicketClient(repository ticket.RepositoryClientAccess) TicketClient
 	}
 }
 
+func InstantiateBasicTicketClient(id uuid.UUID, ct time.Time, repository ticket.RepositoryClientAccess) TicketClient {
+	return &basicTicketClient{
+		creationTime:     ct,
+		ticketRepository: repository,
+		id:               id,
+	}
+}
+
 type TicketClient interface {
 	entities.IdentifiableEntity
 	TicketUser

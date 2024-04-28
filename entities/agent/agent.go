@@ -10,6 +10,7 @@ import (
 )
 
 // TODO: Create an AgentFactory that handles the ticket repository while creating or instantiating an Agent to avoid the need to pass the ticket repository every time.
+// TODO: Create an TicketRepositoryAgentAccess interface to handle the ticket repository for agents.
 
 // New creates a new instance of Agent.
 // It takes a ticket repository as input parameter.

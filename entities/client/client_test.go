@@ -37,14 +37,6 @@ func TestInstanceBasicTicketClient(t *testing.T) {
 	}
 }
 
-func InstantiateBasicTicketClient(id uuid.UUID, ct time.Time, repository ticket.RepositoryClientAccess) TicketClient {
-	return &basicTicketClient{
-		creationTime:     ct,
-		ticketRepository: repository,
-		id:               id,
-	}
-}
-
 func TestTicketClient(t *testing.T) {
 	t.Parallel()
 	client := makeBasicClient(t)
@@ -200,7 +192,8 @@ func TestBasicTicketClient_TicketCount(t *testing.T) {
 		if ticketRepository.calls == nil {
 			t.Errorf("Expected GetClientTicketCount to be called")
 		}
-		if ticketRepository.calls["GetClientTicketCount"][0] != client.ID().String() {
+		clientId := client.ID().String()
+		if ticketRepository.calls["GetClientTicketCount"][0] != clientId {
 			t.Errorf("Expected GetClientTicketCount to be called with client id")
 		}
 	})
@@ -288,9 +281,12 @@ func (r *spyTicketRepository) GetAllClientTickets(id uuid.UUID) ([]ticket.Ticket
 	return nil, nil
 }
 
-func (r *spyTicketRepository) GetClientTicketCount(_ uuid.UUID) (int, error) {
-	//TODO implement me
-	panic("implement me")
+func (r *spyTicketRepository) GetClientTicketCount(clientID uuid.UUID) (int, error) {
+	if r.calls == nil {
+		r.calls = make(calls)
+	}
+	r.calls["GetClientTicketCount"] = []string{clientID.String()}
+	return 0, nil
 }
 
 func (r *spyTicketRepository) SaveNewTicketForClient(client uuid.UUID, ticket ticket.Ticket) error {
