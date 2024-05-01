@@ -9,14 +9,10 @@ import (
 	"time"
 )
 
-// TODO: Create an AgentFactory that handles the ticket repository while creating or instantiating an Agent to avoid the need to pass the ticket repository every time.
-// TODO: Create an TicketRepositoryAgentAccess interface to handle the ticket repository for agents.
-
-// New creates a new instance of Agent.
-// It takes a ticket repository as input parameter.
+// New (deprecated, use the Factory methods instead) creates a new instance of Agent.
 // It returns an Agent with a randomly generated UUID for the ID
 // and the current time for the creation time.
-func New(tr ticket.RepositoryClientAccess) (Agent, error) {
+func New(tr ticket.RepositoryAgentAccess) (Agent, error) {
 	if tr == nil {
 		return nil, ErrTicketRepositoryNotImplemented
 	}
@@ -27,10 +23,9 @@ func New(tr ticket.RepositoryClientAccess) (Agent, error) {
 	}, nil
 }
 
-// InstanceAgent is a function that creates an instance of the Agent interface.
-// It takes an uuid.UUID (uuid1) and a time.Time (creationTime) as input parameters, as well as a ticket repository.
-// and returns an Agent instance.
-func InstanceAgent(uuid1 uuid.UUID, creationTime time.Time, tr ticket.RepositoryClientAccess) (Agent, error) {
+// InstanceAgent (deprecated, use the Factory methods instead) is a function that creates an instance of the Agent
+// interface, for an existing Agent.
+func InstanceAgent(uuid1 uuid.UUID, creationTime time.Time, tr ticket.RepositoryAgentAccess) (Agent, error) {
 	if tr == nil {
 		return nil, ErrTicketRepositoryNotImplemented
 	}
@@ -41,14 +36,12 @@ func InstanceAgent(uuid1 uuid.UUID, creationTime time.Time, tr ticket.Repository
 	}, nil
 }
 
-// Agent represents an interface for an agent entity.
-// It extends the entities.IdentifiableEntity and entities.CreatedEntity interfaces.
-// An agent can retrieve a ticket by its UUID using the GetTicket method.
+// Agent represents an interface for an agent entity. An agent, as a user, is someone who responds to the client's
+// requests through the ticket system.
 type Agent interface {
 	entities.IdentifiableEntity
 	entities.CreatedEntity
 	// GetTicket retrieves a ticket from the ticket repository based on the provided UUID.
-	// It returns the ticket retrieved from the repository and any error encountered during the process.
 	// If the provided UUID is nil, it returns an error.
 	// If the repository returns an error, it returns an error.
 	GetTicket(uuid.UUID) (ticket.Ticket, error)
@@ -57,7 +50,7 @@ type Agent interface {
 type basicAgent struct {
 	id               uuid.UUID
 	creationTime     time.Time
-	ticketRepository ticket.RepositoryClientAccess
+	ticketRepository ticket.RepositoryAgentAccess
 }
 
 func (b basicAgent) CreatedAt() time.Time {

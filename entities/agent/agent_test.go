@@ -130,7 +130,7 @@ type stubTicketRepository struct {
 	forcedError error
 }
 
-func (s stubTicketRepository) Get(id uuid.UUID) (ticket.Ticket, error) {
+func (s stubTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
 	if s.forcedError != nil {
 		return nil, s.forcedError
 	}

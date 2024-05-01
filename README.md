@@ -51,10 +51,11 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - [ ] A ticket repository can close tickets
 - [x] A client uses a ticket repository for ticket persistence
 - [ ] A client can add an answer or comment to a ticket
-- [ ] A client can retrieve all their tickets through the ticket repository
-- [ ] A client can see the ticket details
-- [ ] A client can edit their tickets (a history is saved)
-- [ ] A support agent can retrieve tickets created by all clients, ordered by date (older first), through a ticket repository
+- [ ] A client can close a ticket
+- [x] A client can retrieve all their tickets through the ticket repository
+- [x] A client can get a specific ticket by its id
+- [ ] A client can edit their tickets
+- [x] A support agent uses a ticket repository for ticket persistence
 - [ ] A support agent can add an answer to a ticket
 - [ ] A support agent can be allowed to close tickets though the ticket repository
 - [ ] A support agent can see the ticket details
@@ -72,4 +73,4 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - High priority tickets
 - Low priority tickets
 - Ticket visibility levels
- 
+- A history of ticket changes per ticket

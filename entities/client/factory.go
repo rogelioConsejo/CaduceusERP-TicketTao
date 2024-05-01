@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// NewClientFactory creates a new instance of a TicketClient Factory.
 func NewClientFactory(tr ticket.RepositoryClientAccess) Factory {
 	return basicTicketClientFactory{
 		ticketRepository: tr,

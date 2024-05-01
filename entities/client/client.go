@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// NewBasicTicketClient deprecated, use NewClientFactory to create a client instead
 func NewBasicTicketClient(repository ticket.RepositoryClientAccess) TicketClient {
 	return &basicTicketClient{
 		creationTime:     time.Now(),
@@ -16,6 +17,7 @@ func NewBasicTicketClient(repository ticket.RepositoryClientAccess) TicketClient
 	}
 }
 
+// InstantiateBasicTicketClient deprecated, use NewClientFactory to instantiate a client instead
 func InstantiateBasicTicketClient(id uuid.UUID, ct time.Time, repository ticket.RepositoryClientAccess) TicketClient {
 	return &basicTicketClient{
 		creationTime:     ct,
@@ -24,6 +26,8 @@ func InstantiateBasicTicketClient(id uuid.UUID, ct time.Time, repository ticket.
 	}
 }
 
+// TicketClient represents an interface for a client entity. A client, as a user, is someone who requests
+// help (or value, like an order) through the ticket system.
 type TicketClient interface {
 	entities.IdentifiableEntity
 	TicketUser
