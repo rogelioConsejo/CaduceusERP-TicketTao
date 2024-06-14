@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-//TODO: create a client factory to handle adding the ticket repository to clients
-
 func TestNewBasicTicketClient(t *testing.T) {
 	t.Parallel()
 	client := NewBasicTicketClient(makeFakeTicketRepository())
@@ -132,9 +130,13 @@ func TestBasicTicketClient_CreateTicket(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
-		if ticketRepository.calls["SaveNewTicketForClient"][0] != client.ID().String() {
-			t.Errorf("Expected saveNewTicket to be called")
-		}
+		assertMethodCall(
+			t,
+			"SaveNewTicketForClient",
+			ticketRepository.calls,
+			arguments{
+				client.ID().String(),
+			})
 	})
 }
 
@@ -199,6 +201,81 @@ func TestBasicTicketClient_TicketCount(t *testing.T) {
 	})
 }
 
+func TestBasicTicketClient_CloseTicket(t *testing.T) {
+	t.Parallel()
+	t.Run("A client can close a ticket", func(t *testing.T) {
+		ticketRepository := makeSpyTicketRepository()
+		clientID := uuid.New()
+		client := basicTicketClient{
+			creationTime:     time.Now(),
+			id:               clientID,
+			ticketRepository: ticketRepository,
+		}
+		var err error
+		err = client.CloseTicket(stubTicket.ID())
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		assertMethodCall(t, "GetTicket", ticketRepository.calls, arguments{clientID.String(), stubTicket.ID().String()})
+		assertMethodCall(t, "UpdateTicketForClient", ticketRepository.calls, arguments{clientID.String()})
+		expectUpdatedTicketToBeClosed(t, ticketRepository)
+	})
+}
+
+func TestBasicTicketClient_AddResponse(t *testing.T) {
+	//TODO: handle errors
+	t.Parallel()
+	t.Run("A client can add a response comment to a ticket", func(t *testing.T) {
+		ticketRepository := makeSpyTicketRepository()
+		clientID := uuid.New()
+		client := basicTicketClient{
+			creationTime:     time.Now(),
+			id:               clientID,
+			ticketRepository: ticketRepository,
+		}
+		var err error
+		err = client.AddComment(stubTicket.ID(), "stub_comment")
+		if err != nil {
+			t.Fatalf("Expected no error, got %v", err)
+		}
+		assertMethodCall(t, "GetTicket", ticketRepository.calls, arguments{clientID.String(), stubTicket.ID().String()})
+		assertMethodCall(t, "UpdateTicketForClient", ticketRepository.calls, arguments{clientID.String()})
+	})
+
+}
+
+func assertMethodCall(t *testing.T, methodName method, calls calls, expected arguments) {
+	t.Helper()
+	if calls == nil {
+		t.Errorf("Expected %s to be called", methodName)
+	}
+	for i, value := range expected {
+		if calls[methodName][i] != value {
+			t.Errorf("Expected %s to be called with %s", methodName, value)
+		}
+	}
+}
+
+func expectUpdatedTicketToBeClosed(t *testing.T, repository *spyTicketRepository) {
+	t.Helper()
+	if stubTicket.Status() != ticket.Closed {
+		t.Errorf("Expected ticket to be closed")
+	}
+	if repository.calls == nil {
+		t.Errorf("Expected UpdateTicketForClient to be called")
+	}
+	if len(repository.calls["UpdateTicketForClient"]) != 2 {
+		t.Errorf(
+			"Expected UpdateTicketForClient to be called with 2 arguments, got %v",
+			len(repository.calls["UpdateTicketForClient"]))
+	}
+	if repository.calls["UpdateTicketForClient"][1] != stubTicket.ID().String() {
+		t.Errorf(
+			"Expected UpdateTicketForClient to be called with ticket of id %s, got %s",
+			stubTicket.ID().String(), repository.calls["UpdateTicketForClient"][1])
+	}
+}
+
 func checkClientCreationTime(t *testing.T, client TicketClient) {
 	t.Helper()
 	time.Sleep(11 * time.Millisecond)
@@ -223,6 +300,11 @@ func makeFakeTicketRepository() ticket.RepositoryClientAccess {
 type fakeTicketRepository struct {
 	tickets     []ticket.Ticket
 	ticketIndex map[uuid.UUID]ticket.Ticket
+}
+
+func (r *fakeTicketRepository) UpdateTicketForClient(id uuid.UUID, tck ticket.Ticket) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (r *fakeTicketRepository) SaveNewTicketForClient(userId uuid.UUID, tck ticket.Ticket) error {
@@ -257,12 +339,20 @@ func makeSpyTicketRepository() *spyTicketRepository {
 	return &spyTicketRepository{}
 }
 
-type calls map[method]params
+type calls map[method]arguments
 type method string
-type params []string
+type arguments []string
 
 type spyTicketRepository struct {
 	calls calls
+}
+
+func (r *spyTicketRepository) UpdateTicketForClient(id uuid.UUID, tck ticket.Ticket) error {
+	if r.calls == nil {
+		r.calls = make(calls)
+	}
+	r.calls["UpdateTicketForClient"] = []string{id.String(), tck.ID().String()}
+	return nil
 }
 
 func (r *spyTicketRepository) GetTicket(client, ticket uuid.UUID) (ticket.Ticket, error) {
@@ -270,7 +360,7 @@ func (r *spyTicketRepository) GetTicket(client, ticket uuid.UUID) (ticket.Ticket
 		r.calls = make(calls)
 	}
 	r.calls["GetTicket"] = []string{client.String(), ticket.String()}
-	return nil, nil
+	return stubTicket, nil
 }
 
 func (r *spyTicketRepository) GetAllClientTickets(id uuid.UUID) ([]ticket.Ticket, error) {
@@ -296,3 +386,5 @@ func (r *spyTicketRepository) SaveNewTicketForClient(client uuid.UUID, ticket ti
 	r.calls["SaveNewTicketForClient"] = []string{client.String(), ticket.ID().String()}
 	return nil
 }
+
+var stubTicket ticket.Ticket = ticket.NewBasicTicket("stub_title", "stub_description")

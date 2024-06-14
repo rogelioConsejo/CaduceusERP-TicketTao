@@ -84,6 +84,33 @@ func TestBasicTicketAgentFactory_InstantiateAgent(t *testing.T) {
 	})
 }
 
+func TestBasicTicketAgentFactory_InstantiateTicketCloserAgent(t *testing.T) {
+	t.Parallel()
+	var factory Factory
+	var factoryCreationError error
+	var repository stubTicketRepository = stubTicketRepository{}
+	factory, factoryCreationError = NewTicketAgentFactory(repository)
+	if factoryCreationError != nil {
+		t.Fatalf("Error should be nil, got %v", factoryCreationError)
+	}
+	t.Run("It should create a new agent with the provided ticket.RepositoryAgentAccess", func(t *testing.T) {
+		t.Parallel()
+		agentID := uuid.New()
+		testTime := time.Now()
+		agent, err := factory.InstantiateAgent(agentID, testTime)
+		if err != nil {
+			t.Fatalf("Error should be nil, got %v", err)
+		}
+		if agent == nil {
+			t.Fatal("Agent should not be nil")
+		}
+		if agent.(basicAgent).ticketRepository != repository {
+			t.Fatal("Repository should be the same as the provided repository")
+		}
+
+	})
+}
+
 func assertFactoryCreationWithProvidedRepository(t *testing.T, factory Factory, repository stubTicketRepository) {
 	t.Helper()
 

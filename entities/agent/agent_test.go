@@ -126,8 +126,75 @@ func TestBasicAgent_GetTicket(t *testing.T) {
 	})
 }
 
+func TestBasicAgent_AnswerTicket(t *testing.T) {
+	t.Parallel()
+	agent, instanceError := InstanceAgent(uuid.New(), time.Now(), &fakeTicketRepository{})
+	if instanceError != nil {
+		t.Fatal("Error should be nil")
+	}
+	t.Run("Should add a response to the ticket", func(t *testing.T) {
+		t.Parallel()
+		ticketID := uuid.New()
+		comment := "Test Comment"
+		err := agent.AnswerTicket(ticketID, comment)
+		if err != nil {
+			t.Fatal("Error should be nil")
+		}
+		tkt, getTicketError := agent.GetTicket(ticketID)
+		if getTicketError != nil {
+			t.Fatal("Error should be nil")
+		}
+		if len(tkt.Responses()) != 1 {
+			t.Error("Response should be added to the ticket")
+		}
+		if tkt.Responses()[0].Content() != comment {
+			t.Error("Response should have the same comment as the one provided")
+		}
+	})
+	t.Run("Should return an error if the comment is empty", func(t *testing.T) {
+		t.Parallel()
+		err := agent.AnswerTicket(uuid.New(), "")
+		if err == nil {
+			t.Error("Error should not be nil")
+		}
+		if err.Error() != "error while validating comment: response cannot be empty" {
+			t.Error("Error message should be 'response cannot be empty'")
+		}
+	})
+	t.Run("Should return an error if the ticket ID is nil", func(t *testing.T) {
+		t.Parallel()
+		err := agent.AnswerTicket(uuid.Nil, "Test Comment")
+		if err == nil {
+			t.Error("Error should not be nil")
+		}
+		if !errors.Is(err, ErrNilTicketID) {
+			t.Errorf("Error should be %v", ErrNilTicketID)
+		}
+	})
+	t.Run("Should return an error if the ticket repository returns an error", func(t *testing.T) {
+		t.Parallel()
+		errorAgent, agentCreationErr := New(stubTicketRepository{
+			forcedError: errors.New("an error occurred while retrieving the ticket"),
+		})
+		if agentCreationErr != nil {
+			t.Fatal("An error occurred while creating the agent")
+		}
+		err := errorAgent.AnswerTicket(uuid.New(), "Test Comment")
+		if err == nil {
+			t.Error("Error should not be nil")
+		}
+		if !errors.Is(err, ErrRetrievingTicket) {
+			t.Errorf("Error should be %v", ErrRetrievingTicket)
+		}
+	})
+}
+
 type stubTicketRepository struct {
 	forcedError error
+}
+
+func (s stubTicketRepository) UpdateTicket(tck ticket.Ticket) error {
+	return nil
 }
 
 func (s stubTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
@@ -135,4 +202,38 @@ func (s stubTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
 		return nil, s.forcedError
 	}
 	return ticket.MakeEmptyBasicTicket(id, "Test Title", "Test Description"), nil
+}
+
+type fakeTicketRepository struct {
+	forcedError error
+	tickets     map[uuid.UUID]ticket.Ticket
+}
+
+func (f *fakeTicketRepository) UpdateTicket(tck ticket.Ticket) error {
+	if f.forcedError != nil {
+		return f.forcedError
+	}
+	if f.tickets == nil {
+		f.tickets = make(map[uuid.UUID]ticket.Ticket)
+	}
+	if _, ok := f.tickets[tck.ID()]; !ok {
+		return errors.New("ticket not found")
+	}
+	f.tickets[tck.ID()] = tck
+	return nil
+}
+
+func (f *fakeTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
+	if f.forcedError != nil {
+		return nil, f.forcedError
+	}
+	if f.tickets == nil {
+		f.tickets = make(map[uuid.UUID]ticket.Ticket)
+	}
+	if tck, ok := f.tickets[id]; ok {
+		return tck, nil
+	}
+	newTicket := ticket.MakeEmptyBasicTicket(id, "Test Title", "Test Description")
+	f.tickets[id] = newTicket
+	return newTicket, nil
 }

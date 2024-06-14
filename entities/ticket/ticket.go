@@ -8,6 +8,19 @@ import (
 	"time"
 )
 
+// Ticket represents an interface for a ticket.
+type Ticket interface {
+	entities.CreatedEntity
+	entities.IdentifiableEntity
+	Title() string
+	Description() string
+	Status() Status
+	// AddResponse adds a response to the ticket.
+	AddResponse(Response)
+	Responses() []Response
+	Close()
+}
+
 // NewBasicTicket creates a new basic ticket with the given title and description.
 // It returns a pointer to a basicTicket that implements the Ticket interface.
 func NewBasicTicket(title, description string) Ticket {
@@ -29,19 +42,6 @@ func MakeEmptyBasicTicket(id uuid.UUID, title, description string) Ticket {
 		description:  description,
 		status:       Open,
 	}
-}
-
-// Ticket represents an interface for a ticket.
-type Ticket interface {
-	entities.CreatedEntity
-	entities.IdentifiableEntity
-	Title() string
-	Description() string
-	Status() Status
-	// AddResponse adds a response to the ticket.
-	AddResponse(Response)
-	Responses() []Response
-	Close()
 }
 
 // Status represents the status of a ticket.

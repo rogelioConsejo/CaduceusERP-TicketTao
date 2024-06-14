@@ -14,6 +14,8 @@ type RepositoryClientAccess interface {
 type RepositoryAgentAccess interface {
 	// GetTicket can retrieve a ticket from the repository based on the provided UUID. It should have access to all tickets.
 	GetTicket(ticket uuid.UUID) (Ticket, error)
+	// UpdateTicket can update a ticket in the repository. It should return an error if the ticket does not exist.
+	UpdateTicket(tck Ticket) error
 }
 
 type RepositoryClientReader interface {
@@ -26,4 +28,5 @@ type RepositoryClientReader interface {
 
 type RepositoryClientWriter interface {
 	SaveNewTicketForClient(userId uuid.UUID, ticket Ticket) error
+	UpdateTicketForClient(userId uuid.UUID, tck Ticket) error
 }

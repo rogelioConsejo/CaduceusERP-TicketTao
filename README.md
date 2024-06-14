@@ -44,24 +44,26 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - [x] A ticket has a conversation log with timestamp, user id and message
 - [x] A ticket has a creation date
 - [x] A ticket has a unique identifier
-- [ ] A ticket repository can save a ticket
+- [ ] A ticket repository can save a ticket for a client
 - [ ] A ticket repository can return a ticket by its id
+- [ ] A ticket repository can return all of a client's tickets ordered by creation date
 - [ ] A ticket repository can return all tickets ordered by creation date (fifo)
 - [ ] A ticket repository can return only non-closed tickets
 - [ ] A ticket repository can close tickets
 - [x] A client uses a ticket repository for ticket persistence
-- [ ] A client can add an answer or comment to a ticket
-- [ ] A client can close a ticket
+- [x] A client can add an answer or comment to a ticket
+- [x] A client can close a ticket
 - [x] A client can retrieve all their tickets through the ticket repository
 - [x] A client can get a specific ticket by its id
-- [ ] A client can edit their tickets
 - [x] A support agent uses a ticket repository for ticket persistence
-- [ ] A support agent can add an answer to a ticket
-- [ ] A support agent can be allowed to close tickets though the ticket repository
-- [ ] A support agent can see the ticket details
+- [x] A support agent can add an answer to a ticket
+- [x] A support agent can be allowed to close tickets though the ticket repository*
+- [x] A support agent can see the ticket details
 
+*We want to have the option of allowing support agents to close tickets or not. 
 
 #### Next Steps 
+- A client can edit their tickets
 - A support agent can be enabled to create tickets
 - Input validation
 - Error handling

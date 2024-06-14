@@ -19,12 +19,24 @@ func NewTicketAgentFactory(repository ticket.RepositoryAgentAccess) (Factory, er
 }
 
 type Factory interface {
+	// NewAgent creates a new instance of Agent.
 	NewAgent() (Agent, error)
+	// InstantiateAgent returns an instance of an existing Agent.
 	InstantiateAgent(agent uuid.UUID, createdAt time.Time) (Agent, error)
+	// InstantiateTicketCloserAgent decorates an Agent with the ability to close tickets.
+	InstantiateTicketCloserAgent(agent uuid.UUID, createdAt time.Time) (TicketCloserAgent, error)
 }
 
 type basicTicketAgentFactory struct {
 	ticketRepository ticket.RepositoryAgentAccess
+}
+
+func (b basicTicketAgentFactory) InstantiateTicketCloserAgent(agent uuid.UUID, createdAt time.Time) (TicketCloserAgent, error) {
+	a, err := b.InstantiateAgent(agent, createdAt)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrInstantiatingAgent, err)
+	}
+	return newTicketCloserAgent(a, b.ticketRepository), nil
 }
 
 func (b basicTicketAgentFactory) InstantiateAgent(agent uuid.UUID, createdAt time.Time) (Agent, error) {

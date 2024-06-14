@@ -30,8 +30,8 @@ func InstantiateBasicTicketClient(id uuid.UUID, ct time.Time, repository ticket.
 // help (or value, like an order) through the ticket system.
 type TicketClient interface {
 	entities.IdentifiableEntity
-	TicketUser
 	entities.CreatedEntity
+	TicketUser
 }
 
 type TicketUser interface {
@@ -47,12 +47,26 @@ type TicketClientReader interface {
 
 type TicketWriter interface {
 	CreateTicket(title string, description string) error
+	AddComment(ticketId uuid.UUID, comment string) error
 }
 
 type basicTicketClient struct {
 	creationTime     time.Time
 	id               uuid.UUID
 	ticketRepository ticket.RepositoryClientAccess
+}
+
+func (c *basicTicketClient) AddComment(ticketId uuid.UUID, comment string) error {
+	tck, err := c.GetTicket(ticketId)
+	if err != nil {
+		return fmt.Errorf("could not get ticket to add comment: %w", err)
+	}
+	tck.AddResponse(ticket.NewResponse(c.id, comment))
+	err = c.ticketRepository.UpdateTicketForClient(c.id, tck)
+	if err != nil {
+		return fmt.Errorf("could not update ticket with comment: %w", err)
+	}
+	return nil
 }
 
 func (c *basicTicketClient) ID() uuid.UUID {
@@ -94,4 +108,17 @@ func (c *basicTicketClient) CreateTicket(title string, description string) error
 
 func (c *basicTicketClient) CreatedAt() time.Time {
 	return c.creationTime
+}
+
+func (c *basicTicketClient) CloseTicket(u uuid.UUID) error {
+	tck, err := c.GetTicket(u)
+	if err != nil {
+		return fmt.Errorf("could retrieve ticket to be closed: %w", err)
+	}
+	tck.Close()
+	err = c.ticketRepository.UpdateTicketForClient(c.id, tck)
+	if err != nil {
+		return fmt.Errorf("could not update ticket: %w", err)
+	}
+	return nil
 }

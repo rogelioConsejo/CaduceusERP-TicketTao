@@ -45,12 +45,37 @@ type Agent interface {
 	// If the provided UUID is nil, it returns an error.
 	// If the repository returns an error, it returns an error.
 	GetTicket(uuid.UUID) (ticket.Ticket, error)
+	AnswerTicket(uuid.UUID, string) error
 }
 
 type basicAgent struct {
 	id               uuid.UUID
 	creationTime     time.Time
 	ticketRepository ticket.RepositoryAgentAccess
+}
+
+func (b basicAgent) AnswerTicket(ticketID uuid.UUID, s string) error {
+	commentError := validateTicketComment(ticketID, s)
+	if commentError != nil {
+		return fmt.Errorf("error while validating comment: %w", commentError)
+	}
+	tck, err := b.GetTicket(ticketID)
+	if err != nil {
+		return fmt.Errorf("error while getting ticket: %w", err)
+	}
+	tck.AddResponse(ticket.NewResponse(b.ID(), s))
+	err = b.ticketRepository.UpdateTicket(tck)
+	return nil
+}
+
+func validateTicketComment(u uuid.UUID, s string) error {
+	if u == uuid.Nil {
+		return ErrNilTicketID
+	}
+	if s == "" {
+		return errors.New("response cannot be empty")
+	}
+	return nil
 }
 
 func (b basicAgent) CreatedAt() time.Time {
