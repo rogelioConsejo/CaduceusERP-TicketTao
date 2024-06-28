@@ -98,8 +98,11 @@ func (c *basicTicketClient) TicketCount() (int, error) {
 }
 
 func (c *basicTicketClient) CreateTicket(title string, description string) error {
-	newTicket := ticket.NewBasicTicket(title, description)
-	err := c.ticketRepository.SaveNewTicketForClient(c.id, newTicket)
+	newTicket, err := ticket.NewBasicTicket(title, description)
+	if err != nil {
+		return fmt.Errorf("could not create ticket: %w", err)
+	}
+	err = c.ticketRepository.SaveNewTicketForClient(c.id, newTicket)
 	if err != nil {
 		return fmt.Errorf("could not create ticket: %w", err)
 	}

@@ -2,6 +2,7 @@ package agent
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"math/rand"
 	"testing"
@@ -201,7 +202,7 @@ func (s stubTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
 	if s.forcedError != nil {
 		return nil, s.forcedError
 	}
-	return ticket.MakeEmptyBasicTicket(id, "Test Title", "Test Description"), nil
+	return ticket.MakeBasicTicket(id, time.Now(), ticket.Data{Title: "Test Title", Description: "Test Description", Status: "Open", Responses: nil})
 }
 
 type fakeTicketRepository struct {
@@ -233,7 +234,10 @@ func (f *fakeTicketRepository) GetTicket(id uuid.UUID) (ticket.Ticket, error) {
 	if tck, ok := f.tickets[id]; ok {
 		return tck, nil
 	}
-	newTicket := ticket.MakeEmptyBasicTicket(id, "Test Title", "Test Description")
+	newTicket, err := ticket.MakeBasicTicket(id, time.Now(), ticket.Data{Title: "Test Title", Description: "Test Description", Status: "Open", Responses: nil})
+	if err != nil {
+		return nil, fmt.Errorf("error while creating new ticket: %w", err)
+	}
 	f.tickets[id] = newTicket
 	return newTicket, nil
 }

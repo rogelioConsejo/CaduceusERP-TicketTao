@@ -387,4 +387,8 @@ func (r *spyTicketRepository) SaveNewTicketForClient(client uuid.UUID, ticket ti
 	return nil
 }
 
-var stubTicket ticket.Ticket = ticket.NewBasicTicket("stub_title", "stub_description")
+func init() {
+	stubTicket, _ = ticket.NewBasicTicket("stub_title", "stub_description")
+}
+
+var stubTicket ticket.Ticket

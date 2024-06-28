@@ -36,5 +36,3 @@ type RepositoryClientWriter interface {
 
 var ErrNilCreatorUserID error = errors.New("ticket creator's user id cannot be nil")
 var ErrNilTicket error = errors.New("ticket cannot be nil")
-var ErrEmptyTitle error = errors.New("ticket title cannot be empty")
-var ErrEmptyDescription error = errors.New("ticket description cannot be empty")

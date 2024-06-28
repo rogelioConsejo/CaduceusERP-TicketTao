@@ -40,6 +40,7 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 #### Development
 ##### Must have
 - [x] A new ticket can be crated
+- [x] A ticket has a non-empty title
 - [ ] An existing ticket can be represented as an entity
 - [x] A ticket changes to "in progress" status when a support agent answers it
 - [x] A ticket can be closed

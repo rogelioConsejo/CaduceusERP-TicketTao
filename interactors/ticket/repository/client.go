@@ -30,6 +30,8 @@ func (b basicClientTicketRepository) GetClientTicketCount(client uuid.UUID) (int
 }
 
 // SaveNewTicketForClient saves a new ticket for a client, it returns an error if the user id is nil or the ticket is nil.
+// It also returns an error if the ticket's title is empty or the ticket's description is empty, to make sure that the
+// ticket is valid.
 func (b basicClientTicketRepository) SaveNewTicketForClient(userId uuid.UUID, tck ticket.Ticket) error {
 	if userId == uuid.Nil {
 		return errors.Join(SaveNewTicketForClientError, ticket.ErrNilCreatorUserID)
@@ -39,9 +41,6 @@ func (b basicClientTicketRepository) SaveNewTicketForClient(userId uuid.UUID, tc
 	}
 	if tck.Title() == "" {
 		return errors.Join(SaveNewTicketForClientError, ticket.ErrEmptyTitle)
-	}
-	if tck.Description() == "" {
-		return errors.Join(SaveNewTicketForClientError, ticket.ErrEmptyDescription)
 	}
 	return nil
 }

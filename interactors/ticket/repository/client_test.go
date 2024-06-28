@@ -17,14 +17,18 @@ func TestGetClientTicketRepository(t *testing.T) {
 	})
 }
 
-// TODO: We should probably move the ticket title and description validation to the ticket entity.
 func TestBasicClientTicketRepository_SaveNewTicketForClient(t *testing.T) {
 	t.Parallel()
 	var clientRepo ticket.RepositoryClientAccess = GetClientTicketRepository()
 	t.Run("It should save a new ticket for a client", func(t *testing.T) {
-		var tck ticket.Ticket = ticket.NewBasicTicket("title", "description")
+		var tck ticket.Ticket
+		var err error
+		tck, err = ticket.NewBasicTicket("title", "description")
+		if err != nil {
+			t.Error("Error creating new basic ticket")
+		}
 		var userId uuid.UUID = uuid.New()
-		err := clientRepo.SaveNewTicketForClient(userId, tck)
+		err = clientRepo.SaveNewTicketForClient(userId, tck)
 		if err != nil {
 			t.Error("Error saving new ticket for client")
 		}
@@ -39,14 +43,11 @@ func TestBasicClientTicketRepository_SaveNewTicketForClient(t *testing.T) {
 		assertSaveNewTicketForClientError(t, err, ticket.ErrNilTicket)
 	})
 	t.Run("It should return an error when the ticket's Title is empty", func(t *testing.T) {
-		var tck ticket.Ticket = ticket.NewBasicTicket("", "description")
+		t.Skip("This cannot be tested because we cannot create a ticket with an empty title")
+		var tck ticket.Ticket
+		tck, _ = ticket.NewBasicTicket("", "description")
 		err := clientRepo.SaveNewTicketForClient(uuid.New(), tck)
 		assertSaveNewTicketForClientError(t, err, ticket.ErrEmptyTitle)
-	})
-	t.Run("It should return an error when the ticket's Description is empty", func(t *testing.T) {
-		var tck ticket.Ticket = ticket.NewBasicTicket("title", "")
-		err := clientRepo.SaveNewTicketForClient(uuid.New(), tck)
-		assertSaveNewTicketForClientError(t, err, ticket.ErrEmptyDescription)
 	})
 }
 
@@ -62,6 +63,6 @@ func assertError(t *testing.T, err error, expected error) {
 		t.Error("Error should not be nil")
 	}
 	if !errors.Is(err, expected) {
-		t.Errorf("Error should be %v", expected)
+		t.Errorf("Error should be %v, but is %s", expected, err.Error())
 	}
 }
