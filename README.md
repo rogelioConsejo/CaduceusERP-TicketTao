@@ -41,13 +41,13 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 ##### Must have
 - [x] A new ticket can be crated
 - [x] A ticket has a non-empty title
-- [ ] An existing ticket can be represented as an entity
+- [x] An existing ticket can be represented as an entity
 - [x] A ticket changes to "in progress" status when a support agent answers it
 - [x] A ticket can be closed
 - [x] A ticket has a conversation log with timestamp, user id and message
 - [x] A ticket has a creation date
 - [x] A ticket has a unique identifier
-- [] A ticket repository can save a new ticket for a client
+- [ ] A ticket repository can save a new ticket for a client
 - [ ] A ticket repository can return a ticket by its id
 - [ ] A ticket repository can return all of a client's tickets ordered by creation date
 - [ ] A ticket repository can return all tickets ordered by creation date (fifo)
