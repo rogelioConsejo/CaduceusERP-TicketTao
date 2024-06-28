@@ -30,7 +30,7 @@ type RepositoryClientReader interface {
 }
 
 type RepositoryClientWriter interface {
-	SaveNewTicketForClient(userId uuid.UUID, ticket Ticket) error
+	CreateNewTicketForClient(userId uuid.UUID, ticket Ticket) error
 	UpdateTicketForClient(userId uuid.UUID, tck Ticket) error
 }
 

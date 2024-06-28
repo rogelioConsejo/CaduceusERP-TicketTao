@@ -132,7 +132,7 @@ func TestBasicTicketClient_CreateTicket(t *testing.T) {
 		}
 		assertMethodCall(
 			t,
-			"SaveNewTicketForClient",
+			"CreateNewTicketForClient",
 			ticketRepository.calls,
 			arguments{
 				client.ID().String(),
@@ -151,7 +151,7 @@ func TestBasicTicketClient_GetTickets(t *testing.T) {
 		}
 		_, _ = client.GetTickets()
 		if ticketRepository.calls == nil {
-			t.Errorf("Expected SaveNewTicketForClient to be called")
+			t.Errorf("Expected CreateNewTicketForClient to be called")
 		}
 		if ticketRepository.calls["GetAllClientTickets"][0] != client.ID().String() {
 			t.Errorf("Expected GetAllClientTickets to be called with client id")
@@ -307,7 +307,7 @@ func (r *fakeTicketRepository) UpdateTicketForClient(id uuid.UUID, tck ticket.Ti
 	panic("implement me")
 }
 
-func (r *fakeTicketRepository) SaveNewTicketForClient(userId uuid.UUID, tck ticket.Ticket) error {
+func (r *fakeTicketRepository) CreateNewTicketForClient(userId uuid.UUID, tck ticket.Ticket) error {
 	r.tickets = append(r.tickets, tck)
 	if r.ticketIndex == nil {
 		r.ticketIndex = make(map[uuid.UUID]ticket.Ticket)
@@ -379,11 +379,11 @@ func (r *spyTicketRepository) GetClientTicketCount(clientID uuid.UUID) (int, err
 	return 0, nil
 }
 
-func (r *spyTicketRepository) SaveNewTicketForClient(client uuid.UUID, ticket ticket.Ticket) error {
+func (r *spyTicketRepository) CreateNewTicketForClient(client uuid.UUID, ticket ticket.Ticket) error {
 	if r.calls == nil {
 		r.calls = make(calls)
 	}
-	r.calls["SaveNewTicketForClient"] = []string{client.String(), ticket.ID().String()}
+	r.calls["CreateNewTicketForClient"] = []string{client.String(), ticket.ID().String()}
 	return nil
 }
 

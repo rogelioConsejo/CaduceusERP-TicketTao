@@ -47,12 +47,13 @@ with the users’ innate behaviors and expectations, reducing resistance and enh
 - [x] A ticket has a conversation log with timestamp, user id and message
 - [x] A ticket has a creation date
 - [x] A ticket has a unique identifier
-- [ ] A ticket repository can save a new ticket for a client
+- [x] A ticket repository can save a new ticket for a client
 - [ ] A ticket repository can return a ticket by its id
 - [ ] A ticket repository can return all of a client's tickets ordered by creation date
 - [ ] A ticket repository can return all tickets ordered by creation date (fifo)
 - [ ] A ticket repository can return only non-closed tickets
 - [ ] A ticket repository can close tickets
+- [ ] File ticket persistence
 - [x] A client uses a ticket repository for ticket persistence
 - [x] A client can add an answer or comment to a ticket
 - [x] A client can close a ticket
