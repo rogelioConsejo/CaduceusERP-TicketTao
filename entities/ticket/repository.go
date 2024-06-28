@@ -1,6 +1,9 @@
 package ticket
 
-import "github.com/google/uuid"
+import (
+	"errors"
+	"github.com/google/uuid"
+)
 
 // RepositoryClientAccess is an interface that defines the methods that a ticket repository should implement
 // to be used by a client.
@@ -30,3 +33,8 @@ type RepositoryClientWriter interface {
 	SaveNewTicketForClient(userId uuid.UUID, ticket Ticket) error
 	UpdateTicketForClient(userId uuid.UUID, tck Ticket) error
 }
+
+var ErrNilCreatorUserID error = errors.New("ticket creator's user id cannot be nil")
+var ErrNilTicket error = errors.New("ticket cannot be nil")
+var ErrEmptyTitle error = errors.New("ticket title cannot be empty")
+var ErrEmptyDescription error = errors.New("ticket description cannot be empty")

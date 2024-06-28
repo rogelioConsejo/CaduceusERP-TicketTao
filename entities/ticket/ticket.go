@@ -21,8 +21,8 @@ type Ticket interface {
 	Close()
 }
 
-// NewBasicTicket creates a new basic ticket with the given title and description.
-// It returns a pointer to a basicTicket that implements the Ticket interface.
+// NewBasicTicket creates a new basic ticket with the given title and description (it has a new ID and creation time
+// and is open by default).
 func NewBasicTicket(title, description string) Ticket {
 	return &basicTicket{
 		id:           uuid.New(),
@@ -43,6 +43,8 @@ func MakeEmptyBasicTicket(id uuid.UUID, title, description string) Ticket {
 		status:       Open,
 	}
 }
+
+// TODO: Function to instantiate a ticket from a database record (an existing ticket).
 
 // Status represents the status of a ticket.
 // TODO: Add methods for status transitions.
